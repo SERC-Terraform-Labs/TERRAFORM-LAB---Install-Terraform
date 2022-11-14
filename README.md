@@ -54,3 +54,58 @@ The output should be something similar to:
 Terraform v1.3.4
 on linux_amd64
 ```
+
+## Quick Start Tutorial
+
+We will check Terraform funcationally further by provisioning an NGINX server (a popular web server engine) using Docker. We will cover what the content and commands mean in later labs.
+
+Create a file called `main.tf` and copy the following content into it:
+
+```terraform
+terraform {
+  required_providers {
+    docker = {
+      source  = "kreuzwerker/docker"
+      version = "~> 2.23.0"
+    }
+  }
+}
+
+provider "docker" {}
+
+resource "docker_image" "nginx" {
+  name         = "nginx:latest"
+  keep_locally = false
+}
+
+resource "docker_container" "nginx" {
+  image = docker_image.nginx.latest
+  name  = "tutorial"
+  ports {
+    internal = 80
+    external = 8000
+  }
+}
+```
+
+Initialise the project. This will download the plugin that allows Terraform to interact with Docker.
+
+```sh
+terraform init
+```
+
+Provision the NGINX server container with `terraform apply`. When prompted, comfirm by typing `yes` and pressing `ENTER`.
+
+```sh
+terraform apply
+```
+
+If using Codespaces, you may get a pop-up informing you of that ports have been automatically opened. Click on `Open in Broswer`. You should see the NGINX welcome page.
+
+When ready to finish, stop the container using `terraform destroy`.
+
+```sh
+terraform destroy
+```
+
+:tada: Well done. You installed Terraform and used it to provision an NGINX web server.
